@@ -65,7 +65,7 @@ h, l = ax.get_legend_handles_labels(); order = [l.index(k) for k in l if k != "A
 ax.legend([h[i] for i in order], [l[i] for i in order], loc="center left", bbox_to_anchor=(1.02, 0.5), fontsize=11, labelspacing=1.0)
 fig.tight_layout(); fig.savefig(os.path.join(out, "Figure_2.png"), dpi=DPI); plt.close(fig)
 
-# ---- Figure 3: share of significant slopes by K and reference ----
+# ---- Figure 3: share of significant contrasts by K and reference ----
 t = pd.read_csv(os.path.join(an, "table_byK.csv"))
 fig, axes = plt.subplots(1, 2, figsize=(6.4, 3.0), sharey=True)
 for ax, imb, title in [(axes[0], False, "a. Balanced intercepts"), (axes[1], True, "b. Imbalanced intercepts")]:
@@ -75,7 +75,7 @@ for ax, imb, title in [(axes[0], False, "a. Balanced intercepts"), (axes[1], Tru
         ax.plot(s.K, 100 * s.sig_frac, color=col, marker=mk, linestyle=ls, linewidth=1.6, markersize=6,
                 markeredgecolor="white", markeredgewidth=0.6, label=lab)
     ax.set_title(title, loc="left", fontsize=10.5); ax.set_xticks([5, 10, 20]); ax.set_xlabel("Number of categories (K)")
-axes[0].set_ylabel("Slopes significant at 0.05 (%)")
+axes[0].set_ylabel("Significant contrasts (%)")
 h, l = axes[0].get_legend_handles_labels()
 fig.legend(h, l, loc="lower center", ncol=4, fontsize=9.5, bbox_to_anchor=(0.5, 0.0))
 fig.tight_layout(rect=(0, 0.09, 1, 1)); fig.savefig(os.path.join(out, "Figure_3.png"), dpi=DPI); plt.close(fig)

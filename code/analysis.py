@@ -11,6 +11,11 @@ key = ["K", "n", "rho", "imb", "corr", "rep"]
 skipped = raw[raw.ref == "skipped"]
 failed = raw[raw.ref == "failed"]
 df = raw[~raw.ref.isin(["skipped", "failed"])].copy()
+# data sets with a non-finite standard error under any reference (singular or indefinite information
+# matrix, a sign of separation) are excluded like failed fits
+bad = df[~np.isfinite(df.median_se.astype(float))][key].drop_duplicates()
+invalid_by_cell = {str(k): int(v) for k, v in bad.groupby(["K", "n", "imb"]).size().items()}
+df = df.merge(bad.assign(_bad=1), on=key, how="left"); df = df[df._bad.isna()].drop(columns="_bad")
 df["imb"] = df["imb"].astype(bool)
 REFS = ["freq", "first", "rare", "minq"]
 LAB = {"freq": "Most frequent", "first": "First label", "rare": "Least frequent", "minq": "Smallest atypicality"}
@@ -22,7 +27,8 @@ counts = dict(total=int(len(raw.drop_duplicates(key))), skipped=int(len(skipped)
               failed_by_cell={str(k): int(v) for k, v in failed.groupby(["K", "n", "rho", "imb"]).size().items()},
               retained=int(len(df.drop_duplicates(key))),
               skipped_by_cell=skipped.groupby(["K", "n", "imb"]).size().astype(int).to_dict(),
-              nonconverged=int((~df.converged.astype(bool)).sum()))
+              nonconverged=int((~df.converged.astype(bool)).sum()),
+              invalid_se=int(len(bad)), invalid_se_by_cell=invalid_by_cell)
 counts["skipped_by_cell"] = {str(k): v for k, v in counts["skipped_by_cell"].items()}
 
 # ---- main table: by intercepts x reference, rho <= 0.3 ----

@@ -34,4 +34,6 @@ A hypothesis is supported only if every criterion is met. One-sided p values com
 
 ## Numerical check and illustration
 - `frequency_check.py` compares Equation 4 with exact frequencies (200,000 draws) for 8 configurations × 40 structures.
-- `chile.py` refits the carData::Chile survey under the three references that the rules select. It is descriptive and is not a hypothesis test.
+- `chile.py` refits the carData::Chile survey under all four possible reference categories (three of which the rules select). It is descriptive and is not a hypothesis test.
+
+Addendum (26 November 2026, after the results were seen): data sets with a non-finite standard error under any reference (a sign of quasi-separation) are excluded in `analysis.py`, like failed fits. All hypothesis decisions are the same with and without this exclusion.

@@ -32,7 +32,8 @@ rows = []
 for r in sorted(range(K), key=lambda k: -counts[k]):
     order, res = mle(r)
     SE = np.asarray(res.bse)[1:]; sig = 2 * norm.sf(np.abs(np.asarray(res.params)[1:] / SE)) < 0.05
-    rows.append(dict(rule=rules.get(r, "No rule"), reference=labels[r], respondents=int(counts[r]), atypicality=round(float(q[r]), 3),
+    rows.append(dict(rule=rules.get(r, "No rule"), reference=labels[r], respondents=int(counts[r]),
+                     observed_share=round(float(counts[r] / len(y)), 3), baseline_share=round(float(pi0[r]), 3), atypicality=round(float(q[r]), 3),
                      significant=int(sig.sum()), contrasts=int(sig.size), pervasive=int((sig.mean(1) >= 0.5).sum()),
                      median_se=round(float(np.median(SE)), 3)))
 W = pd.DataFrame(rows); W.to_csv(os.path.join(out, "anes_wald.csv"), index=False)

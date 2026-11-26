@@ -43,7 +43,7 @@ fig.legend([Patch(color="#257de0"), Patch(color="#f47230")], ["Category with the
 fig.tight_layout(pad=0.2, w_pad=2.2, rect=(0, 0.1, 1, 1))
 fig.savefig(os.path.join(out, "Figure_1.png"), dpi=DPI, bbox_inches="tight", pad_inches=0.02); plt.close(fig)
 
-# ---- Figure 2: category frequencies, sorted, with Equation 4 ----
+# ---- Figure 2: category frequencies, sorted, with the frequency-atypicality approximation ----
 p = pd.read_csv(os.path.join(fc, "figure1_points.csv")).sort_values(["frequency", "atypicality"]).reset_index(drop=True)
 fig, ax = plt.subplots(figsize=(6.4, 3.2))
 ax.grid(True, axis="y", **GRID); ax.set_axisbelow(True)
@@ -51,11 +51,11 @@ x = np.arange(1, len(p) + 1)
 for dev, lab, col in [(False, "Common slope on\nevery predictor", "#257de0"), (True, "Deviates on at least\none predictor", "#f47230")]:
     s = p.deviates == dev
     ax.bar(x[s], 100 * p.frequency[s], width=0.8, color=col, edgecolor="white", linewidth=0.4, label=lab, zorder=2)
-ax.scatter(x, 100 * p.approximation, marker="_", s=60, color=INK, linewidths=1.4, label="Equation 4", zorder=3)
+ax.scatter(x, 100 * p.approximation, marker="_", s=60, color=INK, linewidths=1.4, label="Approximation", zorder=3)
 ax.set_xlabel("Categories, sorted from least to most frequent", fontsize=12); ax.set_ylabel("Frequency (%)", fontsize=12)
 ax.tick_params(labelsize=11)
 ax.set_xlim(0.3, len(p) + 0.7); ax.set_xticks([1, 10, 20, 30, 40])
-h, l = ax.get_legend_handles_labels(); order = [l.index(k) for k in l if k != "Equation 4"] + [l.index("Equation 4")]
+h, l = ax.get_legend_handles_labels(); order = [l.index(k) for k in l if k != "Approximation"] + [l.index("Approximation")]
 ax.legend([h[i] for i in order], [l[i] for i in order], loc="center left", bbox_to_anchor=(1.02, 0.5), fontsize=11, labelspacing=1.0)
 fig.tight_layout(); fig.savefig(os.path.join(out, "Figure_2.png"), dpi=DPI); plt.close(fig)
 

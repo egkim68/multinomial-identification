@@ -9,9 +9,10 @@ python3 reference_sim.py 20261125 100 output/reference
 python3 analysis.py output/reference/reference_results.csv output/analysis
 python3 frequency_check.py output/frequency
 python3 chile.py Chile.csv output/chile
+python3 anes.py output/anes
 python3 make_figures.py output/frequency output/analysis output/figures
 ```
 
-To get `Chile.csv`, export the survey data in R with `write.csv(carData::Chile, "Chile.csv")`. The figures are written as PNG files by `make_figures.py`, so they can be redrawn without rerunning the simulation.
+The data for `anes.py` (1996 American National Election Study, Supplementary Material S2) ship with statsmodels. To get `Chile.csv`, export the survey data in R with `write.csv(carData::Chile, "Chile.csv")`. The figures are written as PNG files by `make_figures.py`, so they can be redrawn without rerunning the simulation.
 
 License: MIT.

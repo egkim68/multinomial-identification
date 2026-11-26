@@ -1,6 +1,6 @@
-"""Survey illustration: voting intention before the 1988 Chilean plebiscite (carData::Chile; Fox and Weisberg 2019).
-Fits the unpenalized multinomial logit under each reference, estimates the atypicality of every category
-(as in the simulation), and records the Wald table under each reference.
+"""Survey illustration: voting intention before the 1988 Chilean plebiscite (carData::Chile; Fox et al. 2026).
+Fits the unpenalized multinomial logit under each reference, estimates the atypicality and baseline share (probability at the predictor means)
+of every category (as in the simulation), and records the Wald table under each reference.
 Usage: python3 chile.py <Chile.csv> <outdir>   (output folder created if missing)
 Export the data in R with write.csv(carData::Chile, "Chile.csv")."""
 import sys, os, json
@@ -42,7 +42,8 @@ for r in sorted(range(K), key=lambda k: -counts[k]):
     order, res = mle(r)
     Bm = np.asarray(res.params)[1:]; SE = np.asarray(res.bse)[1:]; pv = 2 * norm.sf(np.abs(Bm / SE))
     sig = pv < 0.05
-    rows.append(dict(rule=rule, reference=labels[r], respondents=int(counts[r]), atypicality=float(q[r]),
+    rows.append(dict(rule=rule, reference=labels[r], respondents=int(counts[r]), observed_share=float(counts[r] / n),
+                     baseline_share=float(pi0[r]), atypicality=float(q[r]),
                      significant=int(sig.sum()), cells=int(sig.size), pervasive=int((sig.mean(1) >= 2 / 3 - 1e-9).sum()),
                      median_se=float(np.median(SE)), **{f"sig_{p}": int(v) for p, v in zip(preds, sig.sum(1))}))
     j = preds.index("male")
@@ -52,6 +53,7 @@ for r in sorted(range(K), key=lambda k: -counts[k]):
                             se=float(SE[j, c_i] / sd[j]), p=float(pv[j, c_i])))
 W = pd.DataFrame(rows); Sx = pd.DataFrame(sexrows)
 summary = dict(n=n, counts=dict(zip(labels, map(int, counts))), atypicality=dict(zip(labels, map(float, q.round(3)))),
+               baseline_share=dict(zip(labels, map(float, pi0.round(3)))),
                male_raw_coef_by_category=dict(zip(labels, map(float, (B[preds.index('male')] - B[preds.index('male')].mean()).round(3)))))
 W.to_csv(os.path.join(out, "chile_wald.csv"), index=False); Sx.to_csv(os.path.join(out, "chile_sex.csv"), index=False)
 json.dump(summary, open(os.path.join(out, "chile_summary.json"), "w"), indent=1)

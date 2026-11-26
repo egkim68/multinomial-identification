@@ -20,27 +20,33 @@ DPI = 1200
 
 # ---- Figure 1: one predictor reported under two references (worked example) ----
 slopes = np.array([0.5, 0.5, 0.5, 1.2]); cats = np.arange(1, 5)
-fig, axes = plt.subplots(1, 3, figsize=(6.5, 2.75), gridspec_kw=dict(width_ratios=[1, 1, 1]))
-ax = axes[0]
+from matplotlib.gridspec import GridSpec
+fig = plt.figure(figsize=(6.5, 4.7))
+gs = GridSpec(2, 4, figure=fig, height_ratios=[1, 1], hspace=0.55, wspace=0.6)
+ax = fig.add_subplot(gs[0, 1:3])
 ax.axhline(0.5, color=INK, linewidth=0.8, linestyle="--", zorder=1)
-ax.scatter(cats, slopes, s=55, color=["#257de0"] * 3 + ["#f47230"], edgecolor="white", linewidth=0.6, zorder=3)
-ax.text(1, 0.62, "common slope", fontsize=9.5, color=INK)
-ax.set_ylim(0, 1.45); ax.set_yticks([0, 0.5, 1.0]); ax.set_ylabel("Slope"); ax.set_title("a. Slopes", loc="left", fontsize=10.5)
-for ax, ref, title in [(axes[1], 1, "b. Reference: category 1"), (axes[2], 4, "c. Reference: category 4")]:
+ax.scatter(cats, slopes, s=60, color=["#257de0"] * 3 + ["#f47230"], edgecolor="white", linewidth=0.6, zorder=3)
+ax.text(1, 0.62, "common slope", fontsize=10, color=INK)
+ax.set_ylim(0, 1.45); ax.set_yticks([0, 0.5, 1.0]); ax.set_ylabel("Slope"); ax.set_title("a. Slopes", loc="left", fontsize=11)
+axes = [ax]
+axb = fig.add_subplot(gs[1, 0:2]); axc = fig.add_subplot(gs[1, 2:4], sharey=axb)
+for ax, ref, title in [(axb, 1, "b. Reference: category 1"), (axc, 4, "c. Reference: category 4")]:
     others = [c for c in cats if c != ref]; vals = [slopes[c - 1] - slopes[ref - 1] for c in others]
     ax.axhline(0, color=INK, linewidth=0.8)
     ax.bar(others, vals, width=0.6, color=["#f47230" if c == 4 else "#257de0" for c in others], zorder=2)
-    ax.text(ref, 0.06, "ref.", ha="center", va="bottom", fontsize=9.5, color=INK)
+    ax.text(ref, 0.06, "ref.", ha="center", va="bottom", fontsize=10, color=INK)
     for c, v in zip(others, vals):
         ax.text(c, v + (0.06 if v >= 0 else -0.06), f"{v:.1f}".replace("-", "\u2212") if abs(v) > 1e-9 else "0",
-                ha="center", va="bottom" if v >= 0 else "top", fontsize=9.5, color=INK)
-    ax.set_ylim(-1.0, 1.0); ax.set_ylabel("Contrast"); ax.set_title(title, loc="left", fontsize=10.5)
+                ha="center", va="bottom" if v >= 0 else "top", fontsize=10, color=INK)
+    ax.set_ylim(-1.0, 1.0); ax.set_yticks([-1.0, -0.5, 0, 0.5, 1.0]); ax.set_title(title, loc="left", fontsize=11)
+    axes.append(ax)
+axb.set_ylabel("Contrast"); plt.setp(axc.get_yticklabels(), visible=False)
 for ax in axes:
     ax.set_xticks(cats); ax.set_xlim(0.5, 4.5); ax.set_xlabel("Category")
 from matplotlib.patches import Patch
 fig.legend([Patch(color="#257de0"), Patch(color="#f47230")], ["Category with the common slope", "Deviating category"],
-           loc="lower center", ncol=2, fontsize=9.5, bbox_to_anchor=(0.5, 0.0), handlelength=1.2, columnspacing=2.0)
-fig.tight_layout(pad=0.2, w_pad=2.2, rect=(0, 0.1, 1, 1))
+           loc="lower center", ncol=2, fontsize=10, bbox_to_anchor=(0.5, -0.01), handlelength=1.2, columnspacing=2.0)
+fig.subplots_adjust(left=0.1, right=0.98, top=0.95, bottom=0.17)
 fig.savefig(os.path.join(out, "Figure_1.png"), dpi=DPI, bbox_inches="tight", pad_inches=0.02); plt.close(fig)
 
 # ---- Figure 2: category frequencies, sorted, with the frequency-atypicality approximation ----
